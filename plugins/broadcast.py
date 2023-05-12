@@ -15,70 +15,28 @@ async def verupikkals(bot, message):
     sts = await message.reply_text(
         text='Broadcasting your messages...'
     )
-    total = 0
-    successful = 0
+    start_time = time.time()
+    total_users = await db.total_users_count()
+    done = 0
     blocked = 0
     deleted = 0
-    unsuccessful = 0
-    
+    failed =0
+
+    success = 0
     async for user in users:
         pti, sh = await broadcast_messages(int(user['id']), b_msg)
         if pti:
-            successful += 1
+            success += 1
         elif pti == False:
             if sh == "Blocked":
-                blocked += 1
+                blocked+=1
             elif sh == "Deleted":
                 deleted += 1
             elif sh == "Error":
-                unsuccessful += 1
-        total += 1
-        
-    status = f"""<b><u>Broadcast Completed</u>
-
-Total Users: <code>{total}</code>
-Successful: <code>{successful}</code>
-Blocked Users: <code>{blocked}</code>
-Deleted Accounts: <code>{deleted}</code>
-Unsuccessful: <code>{unsuccessful}</code></b>"""
-        
-        return await sts.edit(status)    
-        
-        
-@Client.on_message(filters.command("group_broadcast") & filters.user(ADMINS) & filters.reply)
-# https://t.me/PremiumBotz
-async def gr_ou_pbr_oa_dc_a_st(bot, message):
-    chats = await db.get_all_chats()
-    b_msg = message.reply_to_message
-    sts = await message.reply_text(
-        text='Broadcasting your messages...'
-    )
-    total = 0
-    successful = 0
-    blocked = 0
-    deleted = 0
-    unsuccessful = 0
-    
-    async for chat in chats:
-        pti, sh = await broadcast_messages(int(chat['id']), b_msg)
-        if pti:
-            successful += 1
-        elif pti == False:
-            if sh == "Blocked":
-                blocked += 1
-            elif sh == "Deleted":
-                deleted += 1
-            elif sh == "Error":
-                unsuccessful += 1
-        total += 1
-        
-    status = f"""<b><u>Broadcast Completed</u>
-
-Total Users: <code>{total}</code>
-Successful: <code>{successful}</code>
-Blocked Users: <code>{blocked}</code>
-Deleted Accounts: <code>{deleted}</code>
-Unsuccessful: <code>{unsuccessful}</code></b>"""
-        
-    await sts.edit(status)            
-        
+                failed += 1
+        done += 1
+        await asyncio.sleep(2)
+        if not done % 20:
+            await sts.edit(f"Broadcast in progress:\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")    
+    time_taken = datetime.timedelta(seconds=int(time.time()-start_time))
+    await sts.edit(f"Broadcast Completed:\nCompleted in {time_taken} seconds.\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")
