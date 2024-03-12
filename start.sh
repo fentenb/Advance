@@ -1,10 +1,10 @@
 if [ -z $UPSTREAM_REPO ]
 then
   echo "Cloning main Repository"
-  git clone https://github.com/blackviva/Advance-EvaMaria /Advance-EvaMaria
+  git clone https://github.com/fentenb/Advance /Advance
 else
   echo "Cloning Custom Repo from $UPSTREAM_REPO "
-  git clone $UPSTREAM_REPO /Advance-EvaMaria
+  git clone $UPSTREAM_REPO /Advance
 fi
 cd /Advance-EvaMaria
 pip3 install -U -r requirements.txt
